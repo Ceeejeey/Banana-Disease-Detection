@@ -6,6 +6,7 @@ import uuid
 from PIL import Image
 from fastapi.responses import FileResponse
 
+
 from banana_inspector import analyze_image
 
 logging.basicConfig(level=logging.INFO)
