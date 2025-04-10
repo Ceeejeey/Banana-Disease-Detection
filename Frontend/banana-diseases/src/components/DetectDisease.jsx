@@ -27,23 +27,31 @@ const DetectDisease = () => {
 
   const handleUpload = async () => {
     if (!file) return alert("Please upload an image first.");
-  
+
     const formData = new FormData();
-    formData.append("file", file); // Match FastAPI's parameter name: 'file'
-  
+    formData.append("file", file);
+
     try {
       const response = await axios.post("/api/upload-image", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-  
-      setResult(response.data); // FastAPI returns {disease, solution, confidence}
+      
+      if (response.data.message) {
+        alert(response.data.message); // Inform the user about the disease detection
+      }
+
+      setResult(response.data);
     } catch (error) {
       console.error("Upload failed:", error);
       alert(error.response?.data?.detail || "Failed to analyze image");
     }
   };
+
+  const getImageUrl = (filename) => `http://localhost:8000/api/images/${filename}`;
+
+
   return (
     <div className="text-white">
       <h2 className="text-2xl font-bold mb-6">📤 Upload Banana Image</h2>
@@ -73,12 +81,22 @@ const DetectDisease = () => {
       </button>
 
       {/* Results */}
-      {result && (
+      {result && result.detection && (
         <div className="mt-10 p-6 bg-gray-800 border border-gray-700 rounded-xl">
           <h3 className="text-xl font-semibold mb-4 text-green-400">🧬 Detection Results</h3>
-          <p><strong>Disease:</strong> {result.disease}</p>
-          <p><strong>Solution:</strong> {result.solution}</p>
-          <p><strong>Confidence:</strong> {result.confidence}</p>
+          
+          {/* Display image */}
+          <div className="mb-4">
+            <img
+              src={getImageUrl(result.detection.image)}
+              alt="Detected Banana"
+              className="rounded-lg max-w-xs border border-gray-600"
+            />
+          </div>
+
+          <p><strong>Disease:</strong> {result.detection.disease}</p>
+          <p><strong>Solution:</strong> {result.detection.solution}</p>
+          <p><strong>Confidence:</strong> {result.detection.confidence}</p>
         </div>
       )}
     </div>
