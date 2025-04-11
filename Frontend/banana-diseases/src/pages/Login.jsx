@@ -22,10 +22,11 @@ export default function Login() {
       const response = await axios.post("/api/login", formData);
 
       // Check if login was successful
-      const { access_token } = response.data;
+      const { access_token, user } = response.data;
       
       // Store token in localStorage
       localStorage.setItem("token", access_token);
+      localStorage.setItem("user", JSON.stringify(user));
 
       // Navigate to the dashboard after successful login
       navigate("/dashboard");
@@ -35,7 +36,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-200 to-gray-400 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-2xl text-center">
         <h2 className="text-4xl font-semibold text-gray-800 mb-6">Login to Your Account</h2>
         {error && <p className="text-red-500">{error}</p>}
