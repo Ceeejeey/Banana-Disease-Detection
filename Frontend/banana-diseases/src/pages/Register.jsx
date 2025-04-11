@@ -37,7 +37,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center px-4 font-poppins">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-200 to-gray-400 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-2xl text-center">
         <h1 className="text-4xl font-semibold text-gray-800 mb-2">
           Create Your Account
