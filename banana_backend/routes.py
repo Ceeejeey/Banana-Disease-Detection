@@ -35,7 +35,6 @@ async def upload_image(
     db: Session = Depends(get_db),
     user_id: int = 1  # replace with real auth logic if needed
 ):
-  
     try:
         # Validate file type
         if not file.content_type.startswith('image/'):
@@ -58,23 +57,24 @@ async def upload_image(
 
         logger.info(f"Image uploaded: {unique_filename}")
 
-        # Analyze image
+        # Analyze image using the new model structure
         result = await analyze_image(file_path)
         logger.info(f"Analysis result: {result}")
 
-        # Check if 'puwalu' disease was detected
-        if result["status"] == '1' or not result["disease"]:  # If status is 1 or no disease detected
+        # If no disease detected
+        if result["status"] == 3:  
             return {
-                "message": "No 'puwalu' disease detected in the image.",
+                "message": "No disease detected in the image.",
                 "detection": {
                     "image": unique_filename,
-                    "disease": result.get("disease", "Not detected"),
-                    "solution": result.get("solution", "N/A"),
-                    "confidence": result.get("confidence", "N/A")
+                    "type": result["type"],
+                    "disease": "Not detected",
+                    "solution": "N/A",
+                    "confidence": "N/A"
                 }
             }
 
-        # If disease is detected, save detection record to DB
+        # Save detection record to DB
         detection = Detect(
             user_id=user_id,
             image_path=unique_filename,
@@ -90,6 +90,7 @@ async def upload_image(
             "message": "Detection completed and stored successfully",
             "detection": {
                 "image": unique_filename,
+                "type": result["type"],
                 "disease": result["disease"],
                 "solution": result["solution"],
                 "confidence": result["confidence"]
@@ -99,7 +100,7 @@ async def upload_image(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error: {str(e)}")  # Log the error
+        logger.error(f"Error: {str(e)}")
         raise HTTPException(status_code=500, detail="An internal error occurred. Please try again later.")
 
 
